@@ -220,7 +220,7 @@ app.delete('/productos/:id', verificaToken, (req, res) => {
             res.json({
                 ok: true,
                 producto: productoBorrado,
-                mensaje: 'Produco Borrado'
+                message: 'Produco Borrado'
 
             })
 
