@@ -8,12 +8,12 @@ let Producto = require('../models/producto');
 //Obtener productos
 app.get('/productos', verificaToken, (req, res) => {
 
-    let desde = req.query.desde || 0;
-    desde = Number(desde);
+    //let desde = req.query.desde || 0;
+    //desde = Number(desde);
 
     Producto.find({ disponible: true })
-        .skip(desde)
-        .limit(5)
+        //  .skip(desde)
+        // .limit(5)
         .populate('usuario', 'nombre email')
         .populate('categoria', 'descripcion')
         .exec((err, productos) => {
@@ -66,7 +66,29 @@ app.get('/productos/:id', verificaToken, (req, res) => {
 
 });
 
+//Obtener producto por Categoria
+app.get('/productos/:categoria', verificaToken, (req, res) => {
 
+    let categoria = req.params.categoria;
+    Producto.find(categoria, )
+        .populate('categoria', 'descripcion')
+        .exec((err, productos) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            };
+
+            res.json({
+                ok: true,
+                productos
+            })
+        })
+
+
+});
 //Buscar productos
 app.get('/productos/buscar/:termino', verificaToken, (req, res) => {
 
