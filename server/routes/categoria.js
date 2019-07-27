@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
+
 
 
 let { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion');
 
 let app = express();
-
+app.use(cors());
 let Categoria = require('../models/categoria');
 
 

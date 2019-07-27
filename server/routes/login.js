@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
@@ -9,7 +10,7 @@ const client = new OAuth2Client(process.env.CLIENT_ID);
 const Usuario = require('../models/usuario');
 
 const app = express();
-
+app.use(cors());
 
 app.post('/login', (req, res) => {
 

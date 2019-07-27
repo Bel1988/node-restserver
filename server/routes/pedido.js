@@ -1,11 +1,11 @@
 const express = require('express');
 const datetime = require('node-datetime');
-
+const cors = require('cors');
 const { verificaToken } = require('../middlewares/autenticacion');
 
 let app = express();
 let Pedido = require('../models/pedido');
-
+app.use(cors());
 
 app.post('/pedido', verificaToken, (req, res) => {
 
@@ -52,12 +52,31 @@ app.post('/pedido', verificaToken, (req, res) => {
 //Obtener pedidos pendientes
 app.get('/pedido', verificaToken, (req, res) => {
 
-    //let desde = req.query.desde || 0;
-    //desde = Number(desde);
 
     Pedido.find({ status: "Pendiente" })
-        //  .skip(desde)
-        // .limit(5)
+        .populate('usuario', 'nombre email')
+        .populate('producto', 'nombre precioUni categoria')
+        .exec((err, pedidos) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            };
+
+            res.json({
+                ok: true,
+                pedidos
+            })
+        })
+});
+
+// Obtener pedidos aceptados
+app.get('/pedido', verificaToken, (req, res) => {
+
+
+    Pedido.find({ status: "Aceptado" })
         .populate('usuario', 'nombre email')
         .populate('producto', 'nombre precioUni')
         .exec((err, pedidos) => {
@@ -75,5 +94,72 @@ app.get('/pedido', verificaToken, (req, res) => {
             })
         })
 });
+
+//Obtener Productos Rechazados
+app.get('/pedido', verificaToken, (req, res) => {
+
+
+    Pedido.find({ status: "Rechazado" })
+        .populate('usuario', 'nombre email')
+        .populate('producto', 'nombre precioUni')
+        .exec((err, pedidos) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            };
+
+            res.json({
+                ok: true,
+                pedidos
+            })
+        })
+});
+
+
+app.put('/pedido/:id', (req, res) => {
+
+    let id = req.params.id;
+    let body = req.body;
+
+    Pedido.findById(id, (err, pedidoDB) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        };
+
+        if (!pedidoDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'El ID del pedido no existe'
+                }
+            });
+        };
+
+        pedidoDB.status = body.status;
+
+        pedidoDB.save((err, pedidoGuardado) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+
+            }
+            res.json({
+                ok: true,
+                pedido: pedidoGuardado
+            })
+        })
+    })
+
+});
+
 
 module.exports = app;

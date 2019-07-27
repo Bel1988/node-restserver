@@ -1,6 +1,7 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const app = express();
+const cors = require('cors');
 
 const Usuario = require('../models/usuario');
 
@@ -9,7 +10,7 @@ const Producto = require('../models/producto');
 const fs = require('fs');
 
 const path = require('path');
-
+app.use(cors());
 // default options
 app.use(fileUpload({ useTempFiles: true }));
 

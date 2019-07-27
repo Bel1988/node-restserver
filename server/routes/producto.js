@@ -1,10 +1,10 @@
 const express = require('express');
-
+const cors = require('cors');
 const { verificaToken } = require('../middlewares/autenticacion');
 
 let app = express();
 let Producto = require('../models/producto');
-
+app.use(cors());
 //Obtener productos
 app.get('/productos', verificaToken, (req, res) => {
 
@@ -66,37 +66,17 @@ app.get('/productos/:id', verificaToken, (req, res) => {
 
 });
 
-//Obtener producto por Categoria
-app.get('/productos/:categoria', verificaToken, (req, res) => {
-
-    let categoria = req.params.categoria;
-    Producto.find(categoria, )
-        .populate('categoria', 'descripcion')
-        .exec((err, productos) => {
-
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    err
-                });
-            };
-
-            res.json({
-                ok: true,
-                productos
-            })
-        })
 
 
-});
-//Buscar productos
+
+//Buscar productos por nombre
 app.get('/productos/buscar/:termino', verificaToken, (req, res) => {
 
     let termino = req.params.termino;
 
     let regex = new RegExp(termino, 'i');
 
-    Producto.find({ nombre: regex, disponible })
+    Producto.find({ nombre: regex, disponible: true })
         .populate('categoria', 'descripcion')
         .exec((err, productos) => {
 

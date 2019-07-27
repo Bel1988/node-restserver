@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
+const cors = require('cors');
 
 const Usuario = require('../models/usuario');
 
@@ -8,7 +9,7 @@ const { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticac
 
 
 const app = express();
-
+app.use(cors());
 
 
 app.get('/usuario', verificaToken, (req, res) => {
@@ -21,8 +22,8 @@ app.get('/usuario', verificaToken, (req, res) => {
     limite = Number(limite);
 
     Usuario.find({ estado: true }, 'nombre email role estado google img') //para encontrar todos los usuarios
-        .skip(desde) //salta los primeros 5
-        .limit(limite) //para recibir los 5 primeros
+        // .skip(desde) //salta los primeros 5
+        // .limit(limite) //para recibir los 5 primeros
         .exec((err, usuarios) => {
 
             if (err) {

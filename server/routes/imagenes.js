@@ -1,11 +1,13 @@
 const express = require('express');
+const cors = require('cors');
+
 
 const fs = require('fs');
 const path = require('path');
 
 const { verificaTokenImg } = require('../middlewares/autenticacion')
 let app = express();
-
+app.use(cors());
 
 app.get('/imagen/:tipo/:img', verificaTokenImg, (req, res) => {
 
