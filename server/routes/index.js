@@ -12,6 +12,7 @@ app.use(require('./producto'));
 app.use(require('./upload'));
 app.use(require('./pedido'));
 app.use(require('./imagenes'));
+app.use(require('./restaurant'));
 
 
 module.exports = app;

@@ -5,6 +5,9 @@ const { verificaToken } = require('../middlewares/autenticacion');
 let app = express();
 let Producto = require('../models/producto');
 app.use(cors());
+
+
+
 //Obtener productos
 app.get('/productos', verificaToken, (req, res) => {
 
