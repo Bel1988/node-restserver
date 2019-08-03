@@ -9,7 +9,7 @@ app.use(cors());
 
 
 //Obtener productos
-app.get('/productos', verificaToken, (req, res) => {
+app.get('/productos', (req, res) => {
 
     //let desde = req.query.desde || 0;
     //desde = Number(desde);
