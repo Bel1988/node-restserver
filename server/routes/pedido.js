@@ -50,10 +50,10 @@ app.post('/pedido', verificaToken, (req, res) => {
 });
 
 //Obtener pedidos pendientes
-app.get('/pedido', verificaToken, (req, res) => {
+app.get('/pedido', (req, res) => {
 
 
-    Pedido.find({ status: "Pendiente" })
+    Pedido.find({})
         .populate('usuario', 'nombre email')
         .populate('producto', 'nombre precioUni categoria')
         .exec((err, pedidos) => {
@@ -73,7 +73,7 @@ app.get('/pedido', verificaToken, (req, res) => {
 });
 
 // Obtener pedidos aceptados
-app.get('/pedido', verificaToken, (req, res) => {
+app.get('/pedido/po', verificaToken, (req, res) => {
 
 
     Pedido.find({ status: "Aceptado" })
@@ -96,7 +96,7 @@ app.get('/pedido', verificaToken, (req, res) => {
 });
 
 //Obtener Productos Rechazados
-app.get('/pedido', verificaToken, (req, res) => {
+app.get('/pedido/o', verificaToken, (req, res) => {
 
 
     Pedido.find({ status: "Rechazado" })
