@@ -119,12 +119,11 @@ app.get('/pedido/o', verificaToken, (req, res) => {
 });
 
 
-app.put('/pedido/:id', (req, res) => {
+app.put('/pedido', (req, res) => {
 
-    let id = req.params.id;
     let body = req.body;
 
-    Pedido.findById(id, (err, pedidoDB) => {
+    Pedido.findById(body.id, (err, pedidoDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -142,7 +141,13 @@ app.put('/pedido/:id', (req, res) => {
             });
         };
 
-        pedidoDB.status = body.status;
+        if (body.status === 'Pendiente') {
+            pedidoDB.status = 'Aceptado';
+        } else if (body.status === 'Aceptado') {
+            pedidoDB.status = 'Terminado';
+        }
+
+
 
         pedidoDB.save((err, pedidoGuardado) => {
             if (err) {
