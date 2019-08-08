@@ -6,7 +6,7 @@ const { verificaToken } = require('../middlewares/autenticacion');
 let app = express();
 let Pedido = require('../models/pedido');
 app.use(cors());
-
+//prueba
 app.post('/pedido', verificaToken, (req, res) => {
 
     let body = req.body;
