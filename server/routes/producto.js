@@ -187,7 +187,7 @@ app.put('/productos/:id', verificaToken, (req, res) => {
 });
 
 //Borrar un producto
-app.delete('/productos/:id', verificaToken, (req, res) => {
+app.delete('/productos/:id', (req, res) => {
 
     let id = req.params.id;
 
@@ -210,10 +210,7 @@ app.delete('/productos/:id', verificaToken, (req, res) => {
                 }
             });
         };
-
-        productoDB.disponible = false;
-
-        productoDB.save((err, productoBorrado) => {
+        productoDB.remove((err) => {
 
             if (err) {
                 return res.status(500).json({
@@ -224,7 +221,6 @@ app.delete('/productos/:id', verificaToken, (req, res) => {
 
             res.json({
                 ok: true,
-                producto: productoBorrado,
                 message: 'Produco Borrado'
 
             })
