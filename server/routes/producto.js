@@ -5,6 +5,11 @@ const { verificaToken } = require('../middlewares/autenticacion');
 let app = express();
 let Producto = require('../models/producto');
 app.use(cors());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 
 
@@ -14,7 +19,7 @@ app.get('/productos', (req, res) => {
     //let desde = req.query.desde || 0;
     //desde = Number(desde);
 
-    Producto.find({ disponible: true })
+    Producto.find({})
         //  .skip(desde)
         // .limit(5)
         .populate('usuario', 'nombre email')
@@ -35,11 +40,11 @@ app.get('/productos', (req, res) => {
         })
 });
 
-//Obtener producto por ID
-app.get('/productos/:id', verificaToken, (req, res) => {
+//Obtener productos por ID
+app.get('/productos/:id',(req, res) => {
 
     let id = req.params.id;
-    Producto.findById(id, )
+    Producto.findById(id)
         .populate('usario', 'nombre email')
         .populate('categoria', 'descripcion')
         .exec((err, productoDB) => {
@@ -100,12 +105,12 @@ app.get('/productos/buscar/:termino', verificaToken, (req, res) => {
 })
 
 //Crear un nuevo producto
-app.post('/productos', verificaToken, (req, res) => {
+app.post('/productos',(req, res) => {
 
     let body = req.body;
 
     let producto = new Producto({
-        usuario: req.usuario._id,
+        usuario: body.usuId,
         nombre: body.nombre,
         precioUni: body.precioUni,
         descripcion: body.descripcion,
@@ -139,8 +144,31 @@ app.post('/productos', verificaToken, (req, res) => {
     })
 });
 
+
+//Actualizar estados de productos
+app.post('/productos/modificarEstados', (req, res) => {
+
+    let body = JSON.parse(req.body);
+    for (var i = 0; i < body.length; i++) {
+
+        Producto.findById(body[i], (productoDB) => {
+
+            if (productoDB.disponible) {
+                productoDB.disponible = false;
+            }
+            else {
+                productoDB.disponible = true;
+            }
+            productoDB.save();
+        })
+    }
+    res.json({
+        ok: true
+    })
+});
+
 //Actualizar un producto
-app.put('/productos/:id', verificaToken, (req, res) => {
+app.put('/productos/:id',(req, res) => {
 
     let id = req.params.id;
     let body = req.body;
