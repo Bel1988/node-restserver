@@ -1,26 +1,25 @@
 const express = require('express');
-const datetime = require('node-datetime');
+const dateFormat = require('dateformat');
+const moment = require('moment');
 const cors = require('cors');
 const { verificaToken } = require('../middlewares/autenticacion');
-
 let app = express();
 let Pedido = require('../models/pedido');
 app.use(cors());
 //prueba
-app.post('/pedido', verificaToken, (req, res) => {
+app.post('/pedido',(req, res) => {
 
     let body = req.body;
 
 
-    let dt = new datetime.create();
-    let formattedDate = dt.format('d/m/y H:M:S');
+    let dt = body.fecha;
+    let fechaN = dateFormat(dt, 'd/m/yyyy HH:MM:ss');
 
     let pedido = new Pedido({
         usuario: req.usuario._id,
         producto: body.producto,
         aclaracion: body.aclaracion,
-        status: body.status,
-        // fecha: dt,
+        fecha: fechaN,
         mesa: body.mesa
 
     });
@@ -163,6 +162,73 @@ app.put('/pedido', (req, res) => {
             })
         })
     })
+
+});
+// top 5 Productos mas pedidos
+app.get('/pedido/masPedidos', (req, res) => {
+
+    Pedido.aggregate([
+            //agrupa por id y cuenta
+            { $group: { _id: "$producto", count: { $sum: 1 } } },
+
+            //  { $lookup: { from: 'productos', localField: 'producto', foreignField: '_id', as: 'producto' } },
+
+            //ordena por la cantidad de forma descendente
+            { $sort: { count: -1 } },
+            //limita los resultados a 5
+            { $limit: 5 }
+        ])
+        .exec((err, pedidos) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            };
+
+            res.json({
+                ok: true,
+                pedidos
+            })
+        })
+
+});
+//top 5 productos mas pedidos entre 2 fecha
+app.get('/pedido/masPedidosEntreFechas', (req, res) => {
+    let fechaInicio = req.query.desde;
+    let fechaFin = req.query.hasta;
+
+    Pedido
+    //.find({ fecha: { $gte: "10/8/2019", $lte: "15/8/2019" } })
+        .aggregate([
+
+            //agrupa por id y cuenta las repeticiones
+            { $group: { _id: "$producto", count: { $sum: 1 } } },
+
+            //  { $lookup: { from: 'productos', localField: 'producto', foreignField: '_id', as: 'producto' } },
+            //Filtra por fecha
+            { $match: { fecha: { $gte: '10/8/2019', $lte: '15/8/2019' } } },
+
+            //ordena por la cantidad de forma descendente
+            { $sort: { count: -1 } },
+            //limita los resultados a 5
+            { $limit: 5 }
+        ])
+        .exec((err, pedidos) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            };
+
+            res.json({
+                ok: true,
+                pedidos
+            })
+        })
 
 });
 

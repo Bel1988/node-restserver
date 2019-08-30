@@ -8,7 +8,7 @@ var pedidoSchema = new Schema({
     aclaracion: { type: String, required: false },
     status: { type: String, default: "Pendiente" },
     mesa: { type: Number, required: true },
-    //fecha: { type: Date }
+    fecha: { type: String, default: Date.now }
 });
 
 
